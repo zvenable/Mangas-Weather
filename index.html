@@ -57,7 +57,16 @@
       width: 100%;
     }
 
-    /* Flashing red border */
+    .no-alerts {
+      font-size: 2.5vw;
+      font-weight: bold;
+      color: #fff;
+      text-align: center;
+      margin-top: 10vh;
+      width: 100%;
+    }
+
+    /* Common border pseudo-element */
     body::before {
       content: '';
       position: fixed;
@@ -66,10 +75,20 @@
       width: 100%;
       height: 100%;
       box-sizing: border-box;
-      border: 20px solid red;
+      border: 20px solid;
       pointer-events: none;
-      animation: flashBorder 1s infinite alternate;
       z-index: 9999;
+    }
+
+    /* Default (green, no alerts) */
+    body.no-alerts::before {
+      border-color: #00cc00;
+    }
+
+    /* Flashing red when alerts are active */
+    body.alerts::before {
+      animation: flashBorder 1s infinite alternate;
+      border-color: red;
     }
 
     @keyframes flashBorder {
@@ -78,7 +97,7 @@
     }
   </style>
 </head>
-<body>
+<body class="no-alerts">
   <h1>Colbert County Weather Alerts</h1>
   <div id="alerts">Loading...</div>
 
@@ -93,7 +112,13 @@
         const container = document.getElementById("alerts");
 
         if (entries.length === 0) {
-          container.innerHTML = "<p>No active alerts.</p>";
+          container.innerHTML = `
+            <div class="no-alerts">
+              There is no active weather events for Colbert County, AL at this time.
+            </div>
+          `;
+          document.body.classList.add("no-alerts");
+          document.body.classList.remove("alerts");
           return;
         }
 
@@ -113,6 +138,8 @@
         }
 
         container.innerHTML = html;
+        document.body.classList.add("alerts");
+        document.body.classList.remove("no-alerts");
       })
       .catch(err => {
         document.getElementById("alerts").innerHTML = "Failed to load alerts.";
@@ -124,4 +151,5 @@
   </script>
 </body>
 </html>
+
 
